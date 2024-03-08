@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = handler.NewHandler(handler.HandlerOptions{})
+	h := handler.NewHandler(handler.HandlerOptions{})
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
@@ -41,5 +41,7 @@ func main() {
 			"message": message,
 		}, w)
 	})
+
+	r.Get("/login", h.Login)
 	http.ListenAndServe("localhost:3000", r)
 }
