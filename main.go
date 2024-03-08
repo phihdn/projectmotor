@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/phihdn/projectmotor/db"
+	"github.com/phihdn/projectmotor/handler"
 	"github.com/phihdn/projectmotor/template"
 )
 
@@ -20,6 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	_ = handler.NewHandler(handler.HandlerOptions{})
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
