@@ -7,10 +7,13 @@ import (
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gorilla/sessions"
 	"github.com/phihdn/projectmotor/database"
 	"github.com/phihdn/projectmotor/handler"
 	"github.com/phihdn/projectmotor/template"
 )
+
+var store = sessions.NewCookieStore([]byte("0c276f3b2aa511358f443b7bd2188bbf68eba38ac2531f20772293f1d4a3ced0"))
 
 func main() {
 	db, err := database.OpenDB()
@@ -22,7 +25,8 @@ func main() {
 		log.Fatal(err)
 	}
 	h := handler.NewHandler(handler.HandlerOptions{
-		DB: db,
+		DB:    db,
+		Store: store,
 	})
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
