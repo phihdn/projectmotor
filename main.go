@@ -37,6 +37,7 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	r.Handle("/static/*", http.StripPrefix("/static/", fs))
 	r.Get("/login", h.Login)
+	r.Get("/oauth/github/login", h.OAuthGitHubLogin)
 	// Group protected routes into one function to run middleware
 	r.Group(protectedRouter(h))
 	http.ListenAndServe("localhost:3000", r)
