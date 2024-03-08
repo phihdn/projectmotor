@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"github.com/jmoiron/sqlx"
@@ -10,13 +10,13 @@ var DB *sqlx.DB
 
 const DATABASE_URL string = "postgres://phihdn:S3cret@localhost:5432/projectmotor?search_path=public&sslmode=disable"
 
-func OpenDB() error {
+func OpenDB() (*sqlx.DB, error) {
 	conn, err := sqlx.Connect("pgx", DATABASE_URL)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	DB = conn
-	return nil
+	return conn, nil
 }
 
 func CloseDB() error {
