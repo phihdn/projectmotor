@@ -91,6 +91,7 @@ func protectedRouter(h *handler.Handler) func(chi.Router) {
 	return func(r chi.Router) {
 		r.Use(ProtectedCtx(h))
 		r.Get("/projects", h.GetProjects)
+		r.Get("/projects/new", h.NewProject)
 		r.Get("/", h.Dashboard)
 	}
 }
