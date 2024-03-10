@@ -7,14 +7,15 @@ import (
 
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
+	"github.com/phihdn/projectmotor/auth"
 	"github.com/phihdn/projectmotor/database"
 )
 
 type Handler struct {
-	userService    *database.UserService
-	accountService *database.AccountService
-	store          *sessions.CookieStore
-	db             *sqlx.DB
+	UserService    *database.UserService
+	AccountService *database.AccountService
+	Store          *sessions.CookieStore
+	DB             *sqlx.DB
 }
 
 type HandlerOptions struct {
@@ -26,15 +27,15 @@ func NewHandler(options HandlerOptions) *Handler {
 	userService := database.NewUserService(options.DB)
 	accountService := database.NewAccountService(options.DB)
 	return &Handler{
-		store:          options.Store,
-		db:             options.DB,
-		userService:    userService,
-		accountService: accountService,
+		Store:          options.Store,
+		DB:             options.DB,
+		UserService:    userService,
+		AccountService: accountService,
 	}
 }
 
 func (h *Handler) BeginTX(ctx context.Context) (*sqlx.Tx, error) {
-	tx, err := h.db.BeginTxx(ctx, nil)
+	tx, err := h.DB.BeginTxx(ctx, nil)
 	if err != nil {
 		return &sqlx.Tx{}, err
 	}
@@ -42,7 +43,15 @@ func (h *Handler) BeginTX(ctx context.Context) (*sqlx.Tx, error) {
 }
 
 func (h *Handler) GetSessionStore(r *http.Request) (*sessions.Session, error) {
-	return h.store.Get(r, "_projectmotor_session")
+	return h.Store.Get(r, "_projectmotor_session")
+}
+
+func (h *Handler) GetUserFromContext(ctx context.Context) database.User {
+	user := ctx.Value(auth.UserKey{})
+	if user, ok := user.(database.User); ok {
+		return user
+	}
+	return database.User{}
 }
 
 func fail(w http.ResponseWriter, err error, code int) {
