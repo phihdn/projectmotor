@@ -10,4 +10,7 @@ var (
 
 	// Login
 	Login *pongo2.Template = pongo2.Must(set.FromFile("login/index.html"))
+
+	// Projects
+	Projects *pongo2.Template = pongo2.Must(set.FromFile("project/index.html"))
 )
