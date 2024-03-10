@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -13,6 +14,7 @@ type Handler struct {
 	userService    *database.UserService
 	accountService *database.AccountService
 	store          *sessions.CookieStore
+	db             *sqlx.DB
 }
 
 type HandlerOptions struct {
@@ -24,10 +26,19 @@ func NewHandler(options HandlerOptions) *Handler {
 	userService := database.NewUserService(options.DB)
 	accountService := database.NewAccountService(options.DB)
 	return &Handler{
+		store:          options.Store,
+		db:             options.DB,
 		userService:    userService,
 		accountService: accountService,
-		store:          options.Store,
 	}
+}
+
+func (h *Handler) BeginTX(ctx context.Context) (*sqlx.Tx, error) {
+	tx, err := h.db.BeginTxx(ctx, nil)
+	if err != nil {
+		return &sqlx.Tx{}, err
+	}
+	return tx, nil
 }
 
 func (h *Handler) GetSessionStore(r *http.Request) (*sessions.Session, error) {
